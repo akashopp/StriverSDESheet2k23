@@ -1,0 +1,48 @@
+bool storParents(TreeNode<int> *root, stack<TreeNode<int> *> &parents, TreeNode<int> *leaf) {
+  parents.push(root);
+  if (!root->left and !root->right) {
+    if (root->data == leaf->data)
+      return 1;
+    else
+      parents.pop();
+    return 0;
+  }
+  if (root->left) {
+    if (storParents(root->left, parents, leaf))
+      return 1;
+  }
+  if (root->right) {
+    if (storParents(root->right, parents, leaf))
+      return 1;
+  }
+  parents.pop();
+  return 0;
+}
+
+TreeNode<int> *invertBinaryTree(TreeNode<int> *root, TreeNode<int> *leaf) {
+  if (!root)
+    return NULL;
+
+  stack<TreeNode<int> *> parents;
+  storParents(root, parents, leaf);
+
+  TreeNode<int> *head = parents.top();
+  parents.pop();
+
+  TreeNode<int> *par = head;
+  while (!parents.empty()) {
+    auto p = parents.top();
+    parents.pop();
+
+    if (p->right == head) {
+      p->right = p->left;
+      p->left = NULL;
+    } else {
+      p->left = NULL;
+    }
+    head->left = p;
+    head = p;
+  }
+
+  return par;
+}
